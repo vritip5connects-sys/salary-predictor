@@ -18,7 +18,7 @@ skills = st.multiselect(
 
 skill_score = len(skills)
 
-# Sample dataset (simple but realistic)
+# Dataset
 X = np.array([
     [0, 1],
     [1, 2],
@@ -49,7 +49,6 @@ y = np.array([
 model = LinearRegression()
 model.fit(X, y)
 
-# Prediction
 if st.button("Predict Salary"):
 
     input_data = np.array([[experience, skill_score]])
@@ -60,25 +59,38 @@ if st.button("Predict Salary"):
 
     st.write("----------------------------------------")
 
-    # Graph
+    # 📊 Graph with regression line + predicted point
     st.subheader("📊 Experience vs Salary Trend")
 
     fig, ax = plt.subplots()
-    ax.scatter(X[:, 0], y)
+
+    # scatter actual data
+    ax.scatter(X[:, 0], y, label="Data")
+
+    # regression line
+    x_line = np.linspace(0, 10, 100)
+    y_line = model.predict(np.column_stack((x_line, np.full_like(x_line, skill_score))))
+    ax.plot(x_line, y_line, linestyle="--", label="Model Prediction")
+
+    # predicted point
+    ax.scatter(experience, prediction, marker="x", s=100, label="Your Prediction")
+
     ax.set_xlabel("Experience (Years)")
     ax.set_ylabel("Salary")
+    ax.legend()
+
     st.pyplot(fig)
 
     st.write("----------------------------------------")
 
-    # Model understanding
+    # 🧠 Model explanation
     st.subheader("🧠 What affects salary more?")
 
     coef_exp = model.coef_[0]
     coef_skill = model.coef_[1]
 
-    st.write(f"Experience impact: {round(coef_exp, 2)}")
-    st.write(f"Skills impact: {round(coef_skill, 2)}")
+    st.write(f"Each year of experience increases salary by approx ₹{int(coef_exp):,}")
+    st.write(f"Each additional skill increases salary by approx ₹{int(coef_skill):,}")
 
     st.write("----------------------------------------")
 
